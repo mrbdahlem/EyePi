@@ -60,16 +60,7 @@ else:
 display_bus = displayio.FourWire(spi, command=tft_dc, chip_select=tft_cs, reset=tft_rst, baudrate=baudrate)
 display = gc9a01.GC9A01(display_bus, width=WIDTH, height=HEIGHT, rotation=ROTATION, backlight_pin=tft_bl, auto_refresh=True, brightness=1.0) #  
 
-def blink(group):
-    # display the closed eye
-    main.append(closed_eye)
-    # display.refresh()
-
-    # wait a random fraction of a second before removing the closed eye
-    time.sleep(random.random())
-    main.pop()
-    # display.refresh()
-
+# Load the image bitmaps
 openPic = adafruit_imageload.load(img_filenames["open"])
 closedPic = adafruit_imageload.load(img_filenames["closed"])
 
@@ -88,10 +79,18 @@ open_bitmap, open_palette = openPic
 open_eye = displayio.TileGrid(open_bitmap, pixel_shader=open_palette)
 open_eye.flip_x = FLIPPED
 main.append(open_eye)
+main.append(closed_eye)
 
 # Blink randomly
-while True:
-    blink(main);
+while True:    
+    # display the closed eye
+    closed_eye.hidden = False
+
+    # wait a random fraction of a second before removing the closed eye
+    time.sleep(random.random())
+    closed_eye.hidden = True
+
+    # wait a random time 2-10s before blinking again
     time.sleep((random.random() * 8) + 2)
     
 main.pop()  # remove image
